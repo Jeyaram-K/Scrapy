@@ -36,13 +36,13 @@ uv pip install scrapy
 To run the scraper and search for a specific movie, simply run `main.py` and pass the movie name as an argument.
 
 ```bash
-python main.py "Movie Name"
+uv run main.py "Movie Name (year)"
 ```
 
 ### Example
 
 ```bash
-python main.py "Nanban"
+uv run main.py "Nanban (2012)"
 ```
 
 ### Output
