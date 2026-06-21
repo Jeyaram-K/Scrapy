@@ -113,6 +113,12 @@ async def serve_index():
         return FileResponse("index.html")
     raise HTTPException(status_code=404, detail="index.html not found")
 
+@app.get("/index.html")
+async def serve_index_html():
+    if os.path.exists("index.html"):
+        return FileResponse("index.html")
+    raise HTTPException(status_code=404, detail="index.html not found")
+
 @app.get("/index.css")
 async def serve_css():
     if os.path.exists("index.css"):
@@ -124,3 +130,22 @@ async def serve_js():
     if os.path.exists("index.js"):
         return FileResponse("index.js")
     raise HTTPException(status_code=404, detail="index.js not found")
+
+@app.get("/manifest.json")
+async def serve_manifest():
+    if os.path.exists("manifest.json"):
+        return FileResponse("manifest.json", media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="manifest.json not found")
+
+@app.get("/sw.js")
+async def serve_sw():
+    if os.path.exists("sw.js"):
+        return FileResponse("sw.js", media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="sw.js not found")
+
+@app.get("/icons/{filename}")
+async def serve_icon(filename: str):
+    icon_path = os.path.join("icons", filename)
+    if os.path.exists(icon_path):
+        return FileResponse(icon_path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Icon not found")
