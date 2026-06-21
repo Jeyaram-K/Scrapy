@@ -10,13 +10,14 @@ class MovieFinderSpider(scrapy.Spider):
         self.movie_name = movie_name
         self.found = False
 
-    def start_requests(self):
+    async def start(self):
+        self.logger.info(f"start called with movie_name: {self.movie_name}")
         if not self.movie_name:
             self.logger.error("Please provide a movie_name argument.")
             return
             
         urls = [
-            'https://moviesda17.com/',
+            'https://moviesda32.com/',
             'https://isaidub.love/'
         ]
         for url in urls:
