@@ -1,25 +1,33 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 import sys
+import os
+from dotenv import load_dotenv
+
+# Load env variables from .env file
+load_dotenv()
 
 class MovieFinderSpider(scrapy.Spider):
     name = "moviefinder"
     
-    def __init__(self, movie_name=None, *args, **kwargs):
+    def __init__(self, movie_name=None, source_type="all", *args, **kwargs):
         super(MovieFinderSpider, self).__init__(*args, **kwargs)
         self.movie_name = movie_name
+        self.source_type = source_type
         self.found = False
 
     async def start(self):
-        self.logger.info(f"start called with movie_name: {self.movie_name}")
+        self.logger.info(f"start called with movie_name: {self.movie_name}, source_type: {self.source_type}")
         if not self.movie_name:
             self.logger.error("Please provide a movie_name argument.")
             return
             
-        urls = [
-            'https://moviesda32.com/',
-            'https://isaidub.love/'
-        ]
+        urls = []
+        if self.source_type in ("all", "moviesda"):
+            urls.append(os.environ.get('MOVIESDA_URL', 'https://moviesda32.com/'))
+        if self.source_type in ("all", "isaidub"):
+            urls.append(os.environ.get('ISAIDUB_URL', 'https://isaidub.love/'))
+            
         for url in urls:
             yield scrapy.Request(url, callback=self.parse_homepage)
 
@@ -178,6 +186,7 @@ class MovieFinderSpider(scrapy.Spider):
 
 if __name__ == "__main__":
     movie_to_search = sys.argv[1] if len(sys.argv) > 1 else "Nanban"
+    source_type = sys.argv[2] if len(sys.argv) > 2 else "all"
     
     process = CrawlerProcess(settings={
         "USER_AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -188,5 +197,5 @@ if __name__ == "__main__":
             "result.json": {"format": "json", "overwrite": True},
         },
     })
-    process.crawl(MovieFinderSpider, movie_name=movie_to_search)
+    process.crawl(MovieFinderSpider, movie_name=movie_to_search, source_type=source_type)
     process.start()

@@ -10,3 +10,4 @@ wheels/
 .venv
 result.json
 debug.log
+.env

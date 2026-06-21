@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cinescraper
+    runtime: docker
+    plan: free
+    envVars:
+      - key: MOVIESDA_URL
+        value: https://moviesda32.com/
+      - key: ISAIDUB_URL
+        value: https://isaidub.guru/

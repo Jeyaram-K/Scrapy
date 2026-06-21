@@ -1,0 +1,4 @@
+fastapi>=0.138.0
+python-dotenv>=1.2.2
+uvicorn>=0.49.0
+scrapy>=2.16.0

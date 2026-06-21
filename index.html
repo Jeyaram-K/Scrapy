@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineScraper - Premium Real-Time Movie Finder</title>
+    <meta name="description" content="Find download servers and direct MP4 links for your favorite movies with CineScraper, powered by real-time Scrapy crawling.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="glow-bg-secondary"></div>
+
+    <header class="app-header">
+        <div class="header-logo">
+            <span class="logo-icon">🎬</span>
+            <span class="logo-text">Cine<span class="highlight">Scraper</span></span>
+        </div>
+        <div class="system-status">
+            <span class="status-dot id-idle" id="status-dot"></span>
+            <span class="status-text" id="status-text">Ready to Crawl</span>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="search-section">
+            <div class="intro-container">
+                <h1 class="main-title">Real-Time Movie <span class="gradient-text">Scraper Engine</span></h1>
+                <p class="subtitle">Search for any movie title. Our automated scraper crawls high-speed download mirrors and extracts details, cover art, and direct MP4 server streams instantly.</p>
+            </div>
+            
+            <form class="search-form" id="search-form">
+                <div class="search-box-wrapper">
+                    <select id="source-select" class="source-select" title="Select Movie Source">
+                        <option value="all">🌐 All Sources</option>
+                        <option value="moviesda">🎬 Tamil Movies</option>
+                        <option value="isaidub">🎙️ Tamil Dubbed</option>
+                    </select>
+                    <div class="input-divider"></div>
+                    <input type="text" id="search-input" class="search-input" placeholder="e.g. 29 (2026) or Nanban..." required autocomplete="off">
+                    <button type="submit" id="search-submit-btn" class="btn btn-primary">
+                        <span class="btn-text">Initiate Crawl</span>
+                        <span class="btn-loader hidden" id="btn-loader"></span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Crawler Terminal/Console -->
+        <section class="console-section hidden" id="console-section">
+            <div class="console-header">
+                <div class="console-title-bar">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="console-title">Scrapy Crawler Instance Logs</span>
+                </div>
+                <button type="button" class="btn-icon" id="toggle-console-btn" title="Toggle Console View">Collapse</button>
+            </div>
+            <div class="console-body" id="console-body">
+                <pre class="console-pre" id="console-log-pre">Initializing Scrapy engine...</pre>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="results-section">
+            <div class="section-header hidden" id="results-header">
+                <h2 class="section-title">Crawl Results</h2>
+                <span class="badge" id="results-count">0 items found</span>
+            </div>
+            
+            <!-- Resolution Filters -->
+            <div class="filter-container hidden" id="filter-container">
+                <span class="filter-label">Resolution:</span>
+                <div class="filter-badges" id="resolution-filters"></div>
+            </div>
+            
+            <!-- Shimmer loading effect -->
+            <div class="shimmer-container hidden" id="shimmer-loading">
+                <div class="shimmer-card"></div>
+                <div class="shimmer-card"></div>
+                <div class="shimmer-card"></div>
+            </div>
+
+            <div class="results-grid" id="results-grid">
+                <!-- Dynamically populated movie cards -->
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>No crawl records to show</h3>
+                <p>Type a movie title in the search box above to initiate a real-time Scrapy crawl across high-speed servers.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 CineScraper Engine. Powered by Scrapy, FastAPI & Python 3.14.</p>
+    </footer>
+
+    <script src="/index.js"></script>
+</body>
+</html>
