@@ -99,6 +99,30 @@
         <p>&copy; 2026 CineScraper Engine. Powered by Scrapy, FastAPI & Python 3.14.</p>
     </footer>
 
+    <!-- Video Player Modal -->
+    <div class="video-modal hidden" id="video-modal">
+        <div class="video-modal-backdrop" id="video-modal-backdrop"></div>
+        <div class="video-modal-content">
+            <div class="video-modal-header">
+                <span class="video-modal-title" id="video-modal-title">Now Playing</span>
+                <button class="video-modal-close" id="video-modal-close">&times;</button>
+            </div>
+            <div class="video-player-wrapper">
+                <video id="video-player" controls preload="metadata">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-modal-actions">
+                <button class="btn btn-video-action" id="video-copy-btn" title="Copy Link">
+                    <span class="btn-icon-text">📋</span> Copy Link
+                </button>
+                <a class="btn btn-video-action btn-video-download" id="video-download-btn" href="#" target="_blank" rel="noopener noreferrer" title="Download">
+                    <span class="btn-icon-text">📥</span> Download
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script src="/index.js"></script>
 </body>
 </html>

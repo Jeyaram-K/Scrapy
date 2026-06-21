@@ -23,6 +23,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let pollInterval = null;
     let currentResultsData = [];
 
+    // Video Player Modal
+    const videoModal = document.getElementById('video-modal');
+    const videoModalBackdrop = document.getElementById('video-modal-backdrop');
+    const videoModalClose = document.getElementById('video-modal-close');
+    const videoModalTitle = document.getElementById('video-modal-title');
+    const videoPlayer = document.getElementById('video-player');
+    const videoCopyBtn = document.getElementById('video-copy-btn');
+    const videoDownloadBtn = document.getElementById('video-download-btn');
+
+    window.openVideoModal = function(mp4Link, title) {
+        videoPlayer.src = mp4Link;
+        videoPlayer.load();
+        videoModalTitle.textContent = title || 'Now Playing';
+        videoDownloadBtn.href = mp4Link;
+        videoCopyBtn.onclick = () => {
+            navigator.clipboard.writeText(mp4Link);
+            const oldHTML = videoCopyBtn.innerHTML;
+            videoCopyBtn.innerHTML = '<span class="btn-icon-text">✅</span> Copied!';
+            videoCopyBtn.classList.add('copied');
+            setTimeout(() => {
+                videoCopyBtn.innerHTML = oldHTML;
+                videoCopyBtn.classList.remove('copied');
+            }, 2000);
+        };
+        videoModal.classList.remove('hidden');
+        videoModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        videoPlayer.play().catch(() => {});
+    };
+
+    function closeVideoModal() {
+        videoPlayer.pause();
+        videoPlayer.removeAttribute('src');
+        videoPlayer.load();
+        videoModal.classList.remove('active');
+        videoModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    videoModalClose.addEventListener('click', closeVideoModal);
+    videoModalBackdrop.addEventListener('click', closeVideoModal);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && videoModal.classList.contains('active')) {
+            closeVideoModal();
+        }
+    });
+
 
     // Toggle Console display height/collapsing
     toggleConsoleBtn.addEventListener('click', () => {
@@ -399,6 +446,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <span class="mirror-server">${m.server}</span>
                                         </div>
                                         <div class="mirror-actions">
+                                            <button class="btn btn-play" onclick="openVideoModal('${m.mp4_link}', '${episode} - ${m.server}')" title="Play Stream">
+                                                ▶
+                                            </button>
                                             <button class="btn btn-copy" onclick="navigator.clipboard.writeText('${m.mp4_link}'); const oldHTML = this.innerHTML; this.innerHTML = '✅'; this.classList.add('copied'); setTimeout(() => { this.innerHTML = oldHTML; this.classList.remove('copied'); }, 2000);" title="Copy Stream Link">
                                                 📋
                                             </button>
