@@ -364,22 +364,56 @@ document.addEventListener('DOMContentLoaded', () => {
                     return extractResolution(m.folder_path || '') === activeRes;
                 });
                 
-                mirrorsListContainer.innerHTML = filteredMirrors.map(m => `
-                    <div class="mirror-link-row">
-                        <div class="mirror-info">
-                            <span class="mirror-server">${m.server}</span>
-                            <span class="mirror-path" title="${m.folder_path}">${m.folder_path}</span>
+                const groupedByEpisode = {};
+                filteredMirrors.forEach(m => {
+                    const mp4 = m.mp4_link || '';
+                    const epMatch = mp4.match(/Epi[_-]?(\d+)/i);
+                    const episode = epMatch ? `Ep ${epMatch[1].padStart(2, '0')}` : 'Other';
+                    if (!groupedByEpisode[episode]) {
+                        groupedByEpisode[episode] = [];
+                    }
+                    groupedByEpisode[episode].push(m);
+                });
+                
+                const sortedEpisodes = Object.keys(groupedByEpisode).sort((a, b) => {
+                    const numA = a.match(/\d+/);
+                    const numB = b.match(/\d+/);
+                    if (numA && numB) return parseInt(numA[0]) - parseInt(numB[0]);
+                    return a.localeCompare(b);
+                });
+                
+                let html = '';
+                sortedEpisodes.forEach(episode => {
+                    const mirrors = groupedByEpisode[episode];
+                    html += `
+                        <div class="server-group">
+                            <div class="server-group-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                                <span class="server-group-name">${episode}</span>
+                                <span class="server-group-count">${mirrors.length} mirror${mirrors.length > 1 ? 's' : ''}</span>
+                                <span class="server-group-toggle">▾</span>
+                            </div>
+                            <div class="server-group-mirrors">
+                                ${mirrors.map(m => `
+                                    <div class="mirror-link-row">
+                                        <div class="mirror-info">
+                                            <span class="mirror-server">${m.server}</span>
+                                        </div>
+                                        <div class="mirror-actions">
+                                            <button class="btn btn-copy" onclick="navigator.clipboard.writeText('${m.mp4_link}'); const oldHTML = this.innerHTML; this.innerHTML = '✅'; this.classList.add('copied'); setTimeout(() => { this.innerHTML = oldHTML; this.classList.remove('copied'); }, 2000);" title="Copy Stream Link">
+                                                📋
+                                            </button>
+                                            <a href="${m.mp4_link}" class="btn btn-download" target="_blank" rel="noopener noreferrer" title="Download Stream">
+                                                📥
+                                            </a>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
-                        <div class="mirror-actions">
-                            <button class="btn btn-copy" onclick="navigator.clipboard.writeText('${m.mp4_link}'); const oldHTML = this.innerHTML; this.innerHTML = '✅'; this.classList.add('copied'); setTimeout(() => { this.innerHTML = oldHTML; this.classList.remove('copied'); }, 2000);" title="Copy Stream Link">
-                                📋
-                            </button>
-                            <a href="${m.mp4_link}" class="btn btn-download" target="_blank" rel="noopener noreferrer" title="Download Stream">
-                                📥
-                            </a>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                });
+                
+                mirrorsListContainer.innerHTML = html;
             }
 
             // Populate filter badges if more than 1 resolution is available

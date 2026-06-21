@@ -11,3 +11,4 @@ wheels/
 result.json
 debug.log
 .env
+graphify-out/
