@@ -20,12 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const shimmerLoading = document.getElementById('shimmer-loading');
     const sourceSelect = document.getElementById('source-select');
     
-    const filterContainer = document.getElementById('filter-container');
-    const resolutionFilters = document.getElementById('resolution-filters');
-
     let pollInterval = null;
     let currentResultsData = [];
-    let activeFilter = 'All';
+
 
     // Toggle Console display height/collapsing
     toggleConsoleBtn.addEventListener('click', () => {
@@ -188,14 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!data || data.length === 0) {
                 resultsGrid.innerHTML = '';
                 resultsHeader.classList.add('hidden');
-                filterContainer.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
             }
 
             currentResultsData = data;
-            renderFilters(data);
-            renderResults(data, activeFilter);
+            renderResults(data);
         } catch (err) {
             console.error('Error fetching results:', err);
             shimmerLoading.classList.add('hidden');
@@ -220,94 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'other';
     }
 
-    function renderFilters(results) {
-        // Collect all unique resolutions from results
-        const resolutions = new Set();
-        results.forEach(item => {
-            if (item.folder_path) {
-                const res = extractResolution(item.folder_path);
-                resolutions.add(res);
-            }
-        });
-
-        // Hide filter container if there are no resolutions or only 1
-        if (resolutions.size <= 1) {
-            filterContainer.classList.add('hidden');
-            return;
-        }
-
-        // Sort resolutions descending (e.g. 1080p, 720p, 360p, other)
-        const sortedRes = Array.from(resolutions).sort((a, b) => {
-            if (a === 'other') return 1;
-            if (b === 'other') return -1;
-            const numA = parseInt(a);
-            const numB = parseInt(b);
-            if (!isNaN(numA) && !isNaN(numB)) {
-                return numB - numA;
-            }
-            return a.localeCompare(b);
-        });
-
-        // Build filter buttons HTML
-        resolutionFilters.innerHTML = '';
-        
-        // Add "All" badge
-        const allBtn = document.createElement('button');
-        allBtn.type = 'button';
-        allBtn.className = `filter-badge ${activeFilter === 'All' ? 'active' : ''}`;
-        allBtn.textContent = 'All';
-        allBtn.addEventListener('click', () => {
-            activeFilter = 'All';
-            updateActiveFilterBadge();
-            renderResults(currentResultsData, 'All');
-        });
-        resolutionFilters.appendChild(allBtn);
-
-        // Add dynamic resolution badges
-        sortedRes.forEach(res => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = `filter-badge ${activeFilter === res ? 'active' : ''}`;
-            // Capitalize resolution tags nicely (e.g., 1080p, Other)
-            btn.textContent = res === 'other' ? 'Other' : res.toUpperCase();
-            btn.addEventListener('click', () => {
-                activeFilter = res;
-                updateActiveFilterBadge();
-                renderResults(currentResultsData, res);
-            });
-            resolutionFilters.appendChild(btn);
-        });
-
-        filterContainer.classList.remove('hidden');
-    }
-
-    function updateActiveFilterBadge() {
-        const badges = resolutionFilters.querySelectorAll('.filter-badge');
-        badges.forEach(badge => {
-            const text = badge.textContent.toLowerCase();
-            if (activeFilter === 'All' && text === 'all') {
-                badge.classList.add('active');
-            } else if (activeFilter === 'other' && text === 'other') {
-                badge.classList.add('active');
-            } else if (text === activeFilter) {
-                badge.classList.add('active');
-            } else {
-                badge.classList.remove('active');
-            }
-        });
-    }
-
-    function renderResults(results, filterVal = 'All') {
+    function renderResults(results) {
         const groupedMovies = {};
         let totalMirrorsCount = 0;
 
         results.forEach(item => {
-            // Apply resolution filter
-            const res = extractResolution(item.folder_path || '');
-            if (filterVal !== 'All' && res !== filterVal) {
-                return;
-            }
-
             const title = item.movie_name || 'Unknown Movie';
             if (!groupedMovies[title]) {
                 groupedMovies[title] = {
@@ -338,12 +250,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (movieKeys.length === 0) {
             resultsGrid.innerHTML = '';
             resultsCount.textContent = `0 movies found`;
-            // Show empty state inside grid
             resultsGrid.innerHTML = `
                 <div class="empty-state" style="margin-top: 20px; max-width: 100%;">
                     <div class="empty-icon">📂</div>
-                    <h3>No links match this resolution</h3>
-                    <p>Try switching the filter badge back to 'All' or select another resolution.</p>
+                    <h3>No crawl records to show</h3>
+                    <p>Type a movie title in the search box above to initiate a real-time Scrapy crawl across high-speed servers.</p>
                 </div>
             `;
             return;
@@ -362,18 +273,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const genreTags = movie.genres.map(g => `<span class="genre-tag">${g}</span>`).join('');
             
-            // Build mirrors list
-            const mirrorsListHtml = movie.mirrors.map(m => `
-                <div class="mirror-link-row">
-                    <div class="mirror-info">
-                        <span class="mirror-server">${m.server}</span>
-                        <span class="mirror-path">${m.folder_path}</span>
-                    </div>
-                    <a href="${m.mp4_link}" class="btn btn-download" target="_blank" rel="noopener noreferrer">
-                        Download Stream
-                    </a>
-                </div>
-            `).join('');
+            // Collect unique resolutions for this movie
+            const resolutions = new Set();
+            movie.mirrors.forEach(m => {
+                if (m.folder_path) {
+                    const r = extractResolution(m.folder_path);
+                    resolutions.add(r);
+                }
+            });
+
+            // Sort resolutions descending
+            const sortedRes = Array.from(resolutions).sort((a, b) => {
+                if (a === 'other') return 1;
+                if (b === 'other') return -1;
+                const numA = parseInt(a);
+                const numB = parseInt(b);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return numB - numA;
+                }
+                return a.localeCompare(b);
+            });
+
+            let cardActiveFilter = 'All';
 
             // Fallback for image loading error
             const posterHtml = movie.image_url 
@@ -418,15 +339,75 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p class="synopsis-text">${movie.synopsis}</p>
                     </div>
 
+                    <!-- Dynamic Resolution Filters in Card -->
+                    <div class="filter-container ${resolutions.size <= 1 ? 'hidden' : ''}" style="margin: 0; padding: 10px 14px; border-radius: var(--radius-sm);">
+                        <span class="filter-label">Resolution:</span>
+                        <div class="filter-badges card-filters-container"></div>
+                    </div>
+
                     <div class="mirrors-area">
                         <h4 class="mirrors-title">High Speed Mirrors</h4>
-                        <div class="mirrors-list">
-                            ${mirrorsListHtml}
-                        </div>
+                        <div class="mirrors-list"></div>
                     </div>
                 </div>
             `;
+            
             resultsGrid.appendChild(card);
+
+            const cardFiltersContainer = card.querySelector('.card-filters-container');
+            const mirrorsListContainer = card.querySelector('.mirrors-list');
+
+            // Render mirrors helper
+            function updateMirrors(activeRes) {
+                const filteredMirrors = movie.mirrors.filter(m => {
+                    if (activeRes === 'All') return true;
+                    return extractResolution(m.folder_path || '') === activeRes;
+                });
+                
+                mirrorsListContainer.innerHTML = filteredMirrors.map(m => `
+                    <div class="mirror-link-row">
+                        <div class="mirror-info">
+                            <span class="mirror-server">${m.server}</span>
+                            <span class="mirror-path" title="${m.folder_path}">${m.folder_path}</span>
+                        </div>
+                        <div class="mirror-actions">
+                            <button class="btn btn-copy" onclick="navigator.clipboard.writeText('${m.mp4_link}'); const oldHTML = this.innerHTML; this.innerHTML = '✅'; this.classList.add('copied'); setTimeout(() => { this.innerHTML = oldHTML; this.classList.remove('copied'); }, 2000);" title="Copy Stream Link">
+                                📋
+                            </button>
+                            <a href="${m.mp4_link}" class="btn btn-download" target="_blank" rel="noopener noreferrer" title="Download Stream">
+                                📥
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Populate filter badges if more than 1 resolution is available
+            if (resolutions.size > 1) {
+                const createBadge = (val, label) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `filter-badge ${cardActiveFilter === val ? 'active' : ''}`;
+                    btn.textContent = label;
+                    btn.addEventListener('click', () => {
+                        cardActiveFilter = val;
+                        cardFiltersContainer.querySelectorAll('.filter-badge').forEach(b => {
+                            b.classList.toggle('active', b.dataset.val === val);
+                        });
+                        updateMirrors(val);
+                    });
+                    btn.dataset.val = val;
+                    return btn;
+                };
+
+                cardFiltersContainer.appendChild(createBadge('All', 'All'));
+                sortedRes.forEach(r => {
+                    cardFiltersContainer.appendChild(createBadge(r, r === 'other' ? 'Other' : r.toUpperCase()));
+                });
+            }
+
+            // Initial mirrors render
+            updateMirrors('All');
         });
     }
 });

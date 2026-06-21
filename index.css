@@ -587,8 +587,10 @@ body {
     border-radius: var(--radius-sm);
     padding: 12px 18px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     transition: var(--transition-fast);
 }
 
@@ -597,18 +599,12 @@ body {
     border-color: var(--border-color-hover);
 }
 
-@media (min-width: 576px) {
-    .mirror-link-row {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
-}
-
 .mirror-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
+    flex: 1;
 }
 
 .mirror-server {
@@ -621,19 +617,29 @@ body {
     font-size: 12px;
     color: var(--text-muted);
     font-family: var(--font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-download {
-    font-size: 13px;
-    padding: 8px 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
     background: linear-gradient(135deg, var(--secondary) 0%, #0d9488 100%);
     color: white;
     box-shadow: 0 4px 10px rgba(20, 184, 166, 0.2);
     text-decoration: none;
     border-radius: var(--radius-sm);
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
     transition: var(--transition-fast);
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 .btn-download:hover {
@@ -641,7 +647,45 @@ body {
     box-shadow: 0 6px 14px rgba(20, 184, 166, 0.3);
 }
 
+.mirror-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.btn-copy {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+.btn-copy:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color-hover);
+}
+
+.btn-copy.copied {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+}
+
+
 /* Empty State */
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -811,6 +855,186 @@ body {
     background-color: var(--border-color);
     margin: 8px 0;
     align-self: stretch;
+}
+
+/* Responsive / Mobile Adaptation */
+@media (max-width: 767px) {
+    .app-header {
+        padding: 16px 5%;
+    }
+    
+    .header-logo {
+        font-size: 20px;
+        gap: 8px;
+    }
+    
+    .logo-icon {
+        font-size: 24px;
+    }
+    
+    .system-status {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+    
+    .app-main {
+        margin: 24px auto;
+        gap: 24px;
+        width: 92%;
+    }
+    
+    .main-title {
+        font-size: 32px;
+        letter-spacing: -1px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    .movie-poster-wrapper {
+        max-height: 280px;
+    }
+    
+    .movie-details-content {
+        padding: 20px;
+        gap: 16px;
+    }
+    
+    .movie-title {
+        font-size: 24px;
+        letter-spacing: -0.5px;
+    }
+    
+    .movie-specs {
+        gap: 12px;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 640px) {
+    .search-box-wrapper {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        background: rgba(15, 23, 42, 0.8);
+    }
+    
+    .input-divider {
+        display: none;
+    }
+    
+    .source-select {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background-color: rgba(255, 255, 255, 0.02);
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .search-input:focus {
+        border-color: var(--primary);
+        background-color: rgba(255, 255, 255, 0.04);
+    }
+    
+    #search-submit-btn {
+        width: 100%;
+        padding: 14px 20px;
+    }
+    
+    .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+    
+    .filter-label {
+        font-size: 12px;
+    }
+    
+    .filter-badges {
+        gap: 8px;
+    }
+    
+    .filter-badge {
+        flex: 1;
+        text-align: center;
+        padding: 6px 10px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    
+    .console-header {
+        padding: 10px 14px;
+    }
+    
+    .console-title {
+        font-size: 12px;
+    }
+    
+    .console-body {
+        height: 180px;
+        padding: 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-specs {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .spec-item {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        padding-bottom: 6px;
+    }
+    
+    .spec-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .spec-label {
+        font-size: 10px;
+    }
+    
+    .spec-value {
+        font-size: 12px;
+    }
+    
+    .mirror-link-row {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    
+    .mirror-server {
+        font-size: 13px;
+    }
+    
+    .mirror-path {
+        font-size: 11px;
+    }
 }
 
 
